@@ -269,6 +269,17 @@
   <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('employee')">Cancel</button><button class="btn btn-primary" onclick="saveEmployee()">Save Employee</button></div>
 </div></div>
 
+<div class="modal-overlay" id="modal-payroll-company"><div class="modal">
+  <div class="modal-header"><h2>Company Payroll</h2><button class="modal-close" onclick="closeModal('payroll-company')">&#215;</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="pco-id"/>
+    <div class="form-row"><div class="form-group"><label>Company *</label><select id="pco-company"></select></div><div class="form-group"><label>Payroll Month *</label><input id="pco-month" type="month"/></div></div>
+    <div class="form-row"><div class="form-group"><label>Total Amount (BHD)</label><input id="pco-amount" type="number" placeholder="e.g. 5000"/></div><div class="form-group"><label>Status</label><select id="pco-status"><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Payment Date</label><input id="pco-date" type="date"/></div><div class="form-group"><label>Notes</label><input id="pco-notes" placeholder="Bank ref, etc."/></div></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('payroll-company')">Cancel</button><button class="btn btn-primary" onclick="saveCompanyPayroll()">Save</button></div>
+</div></div>
+
 <div class="modal-overlay" id="modal-payroll"><div class="modal">
   <div class="modal-header"><h2>Record Payroll</h2><button class="modal-close" onclick="closeModal('payroll')">&#215;</button></div>
   <div class="modal-body">
@@ -394,6 +405,7 @@ function openModal(t){
 if(t==='company'){['company-id','c-name','c-cr','c-cr-exp','c-bank','c-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});document.getElementById('company-modal-title').textContent='Add Company';}
 else if(t==='employee'){['employee-id','e-name','e-cpr','e-cpr-exp','e-passport','e-pass-exp','e-visa-exp','e-nationality','e-title','e-salary','e-join','e-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});populateSelect('e-company',db.companies,'name');document.getElementById('employee-modal-title').textContent='Add Employee';}
 else if(t==='payroll'){['payroll-id','p-month','p-amount','p-date','p-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});populateSelect('p-company',db.companies,'name');populatePayrollEmployees();document.getElementById('p-status').value='paid';}
+else if(t==='payroll-company'){['pco-id','pco-amount','pco-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});document.getElementById('pco-month').value='';document.getElementById('pco-date').value='';populateSelect('pco-company',db.companies,'name');document.getElementById('pco-status').value='paid';}
 else if(t==='money'){['money-id','m-bank','m-desc','m-cost','m-fee','m-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});populateSelect('m-company',db.companies,'name');document.getElementById('m-status').value='pending';document.getElementById('m-date').value=new Date().toISOString().split('T')[0];}
 else if(t==='ekey'){['ekey-id','ek-name','ek-cpr','ek-ekey','ek-password','ek-notes'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});populateSelect('ek-company',db.companies,'name');}
 document.getElementById('modal-'+t).classList.add('open');}
@@ -407,12 +419,29 @@ function renderEmployees(s=''){const q=(s||'').toLowerCase();const cf=document.g
 function saveEmployee(){const id=document.getElementById('employee-id').value||uid();const o={id,name:document.getElementById('e-name').value.trim(),company:document.getElementById('e-company').value,cpr:document.getElementById('e-cpr').value.trim(),cprExp:document.getElementById('e-cpr-exp').value,passport:document.getElementById('e-passport').value.trim(),passExp:document.getElementById('e-pass-exp').value,visaExp:document.getElementById('e-visa-exp').value,nationality:document.getElementById('e-nationality').value.trim(),title:document.getElementById('e-title').value.trim(),salary:document.getElementById('e-salary').value,join:document.getElementById('e-join').value,notes:document.getElementById('e-notes').value.trim()};if(!o.name){alert('Name required');return;}const i=db.employees.findIndex(e=>e.id===id);if(i>=0)db.employees[i]=o;else db.employees.push(o);saveDB();closeModal('employee');renderEmployees();renderDashboard();toast('Saved.');}
 function editEmployee(id){const e=db.employees.find(x=>x.id===id);if(!e)return;populateSelect('e-company',db.companies,'name');document.getElementById('employee-id').value=e.id;document.getElementById('e-name').value=e.name;document.getElementById('e-company').value=e.company;document.getElementById('e-cpr').value=e.cpr||'';document.getElementById('e-cpr-exp').value=e.cprExp||'';document.getElementById('e-passport').value=e.passport||'';document.getElementById('e-pass-exp').value=e.passExp||'';document.getElementById('e-visa-exp').value=e.visaExp||'';document.getElementById('e-nationality').value=e.nationality||'';document.getElementById('e-title').value=e.title||'';document.getElementById('e-salary').value=e.salary||'';document.getElementById('e-join').value=e.join||'';document.getElementById('e-notes').value=e.notes||'';document.getElementById('employee-modal-title').textContent='Edit Employee';document.getElementById('modal-employee').classList.add('open');}
 function deleteEmployee(id){if(!confirm('Delete?'))return;db.employees=db.employees.filter(e=>e.id!==id);saveDB();renderEmployees();toast('Deleted.');}
-let ptf='all';
+let ptf='all'; // all|company|individual|paid|unpaid
 function switchPayrollTab(t,el){ptf=t;document.querySelectorAll('#page-payroll .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderPayroll();}
 function populatePayrollFilters(){document.getElementById('payroll-company-filter').innerHTML='<option value="">All Companies</option>'+db.companies.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');const ms=[...new Set(db.payroll.map(p=>p.month))].sort().reverse();document.getElementById('payroll-month-filter').innerHTML='<option value="">All Months</option>'+ms.map(m=>'<option value="'+m+'">'+m+'</option>').join('');}
 function populatePayrollEmployees(){const ci=document.getElementById('p-company')?.value;const em=ci?db.employees.filter(e=>e.company===ci):db.employees;populateSelect('p-employee',em,'name');}
 function renderPayroll(s=''){const q=(s||'').toLowerCase();const cf=document.getElementById('payroll-company-filter')?.value||'';const mf=document.getElementById('payroll-month-filter')?.value||'';const l=db.payroll.filter(p=>(!q||getEmployeeName(p.employee).toLowerCase().includes(q))&&(!cf||p.company===cf)&&(!mf||p.month===mf)&&(ptf==='all'||p.status===ptf)).sort((a,b)=>b.month>a.month?1:-1);if(!l.length){document.getElementById('payroll-table').innerHTML='<tr><td colspan="7"><div class="empty-state"><p>No payroll records.</p></div></td></tr>';return;}document.getElementById('payroll-table').innerHTML=l.map(p=>'<tr><td><strong>'+getEmployeeName(p.employee)+'</strong></td><td>'+getCompanyName(p.company)+'</td><td>'+p.month+'</td><td>BHD '+(parseFloat(p.amount)||0).toFixed(3)+'</td><td><span class="'+(p.status==='paid'?'payroll-paid':'payroll-unpaid')+'">'+(p.status==='paid'?'Paid':'UNPAID')+'</span></td><td>'+(p.date||'--')+'</td><td><div class="actions-td">'+(p.status==='unpaid'?'<button class="btn btn-primary btn-sm" onclick="markPaid(\''+p.id+'\')">Mark Paid</button>':'')+'<button class="btn btn-danger btn-sm" onclick="deletePayroll(\''+p.id+'\')">Del</button></div></td></tr>').join('');}
 function savePayroll(){const id=document.getElementById('payroll-id').value||uid();const o={id,company:document.getElementById('p-company').value,employee:document.getElementById('p-employee').value,month:document.getElementById('p-month').value,amount:document.getElementById('p-amount').value,status:document.getElementById('p-status').value,date:document.getElementById('p-date').value,notes:document.getElementById('p-notes').value};if(!o.employee||!o.month){alert('Employee and month required');return;}const i=db.payroll.findIndex(p=>p.id===id);if(i>=0)db.payroll[i]=o;else db.payroll.push(o);saveDB();closeModal('payroll');populatePayrollFilters();renderPayroll();toast('Saved.');}
+function saveCompanyPayroll(){
+const id=document.getElementById('pco-id').value||uid();
+const o={
+  id,type:'company',
+  company:document.getElementById('pco-company').value,
+  employee:'',
+  month:document.getElementById('pco-month').value,
+  amount:document.getElementById('pco-amount').value,
+  status:document.getElementById('pco-status').value,
+  date:document.getElementById('pco-date').value,
+  notes:document.getElementById('pco-notes').value
+};
+if(!o.company||!o.month){alert('Company and month required');return;}
+const i=db.payroll.findIndex(p=>p.id===id);
+if(i>=0)db.payroll[i]=o;else db.payroll.push(o);
+saveDB();closeModal('payroll-company');populatePayrollFilters();renderPayroll();toast('Company payroll saved.');
+}
 function markPaid(id){const p=db.payroll.find(x=>x.id===id);if(!p)return;p.status='paid';p.date=new Date().toISOString().split('T')[0];saveDB();renderPayroll();renderDashboard();toast('Marked paid.');}
 function deletePayroll(id){if(!confirm('Delete?'))return;db.payroll=db.payroll.filter(p=>p.id!==id);saveDB();renderPayroll();toast('Deleted.');}
 function populateMoneyFilters(){document.getElementById('money-company-filter').innerHTML='<option value="">All Companies</option>'+db.companies.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');}
