@@ -111,40 +111,38 @@
   .status-inactive{color:var(--danger);}
 
   @media print {
-    #sidebar, .topbar, .tabs, .btn, .section-header button, .table-toolbar, .actions-td, .modal-overlay { display: none !important; }
-    #main { margin-left: 0 !important; }
-    .content { padding: 0 !important; }
-    body { background: white !important; font-size: 12px; }
-    .page { display: none !important; }
-    .page.active { display: block !important; }
-    #print-area { display: block !important; }
-    .print-header { display: flex !important; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #000; }
-    .print-header h1 { font-size: 22px; font-weight: 700; }
-    .print-header .print-meta { text-align: right; font-size: 11px; color: #555; }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    th { background: #0a0a0a !important; color: white !important; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; }
-    tr:nth-child(even) td { background: #f9f9f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .print-stat-grid { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-    .print-stat { border: 1px solid #e0e0e0; border-radius: 4px; padding: 14px 16px; }
-    .print-stat .ps-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #999; margin-bottom: 4px; }
-    .print-stat .ps-value { font-size: 22px; font-weight: 700; }
-    .print-section-title { font-size: 13px; font-weight: 700; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0; }
-    .badge { padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 700; }
-    .badge-ok { background: #e8f8ef !important; color: #27ae60 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .badge-warn { background: #fef3e2 !important; color: #e67e22 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .badge-danger { background: #fdecea !important; color: #c0392b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .badge-gray { background: #f0f0f0 !important; color: #555 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .exp-danger { color: #c0392b !important; font-weight: 700; }
-    .exp-warn { color: #e67e22 !important; font-weight: 600; }
-    .exp-ok { color: #27ae60 !important; }
-    .status-active { color: #27ae60 !important; }
-    .status-inactive { color: #c0392b !important; }
-    .payroll-paid { color: #27ae60 !important; font-weight: 600; }
-    .payroll-unpaid { color: #c0392b !important; font-weight: 700; }
-    @page { margin: 15mm 12mm; size: A4; }
+    #sidebar,.topbar,.tabs,.btn,.section-header button,.table-toolbar,.actions-td,.modal-overlay{display:none!important;}
+    #main{margin-left:0!important;}
+    .content{padding:0!important;}
+    body{background:white!important;font-size:11px;}
+    .page{display:none!important;}
+    .page.active{display:block!important;}
+    .print-header{display:flex!important;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #000;}
+    .print-header h1{font-size:20px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+    .print-header .pm{text-align:right;font-size:10px;color:#555;}
+    table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:16px;}
+    th{background:#0a0a0a!important;color:white!important;padding:7px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:0.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    td{padding:6px 10px;border-bottom:1px solid #e0e0e0;}
+    tr:nth-child(even) td{background:#f9f9f9!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .ps-grid{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+    .ps-card{border:1px solid #e0e0e0;border-radius:4px;padding:12px 14px;}
+    .ps-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#999;margin-bottom:3px;}
+    .ps-value{font-size:20px;font-weight:700;}
+    .section-title{font-size:12px;font-weight:700;margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid #e0e0e0;}
+    .badge{padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;}
+    .badge-ok{background:#e8f8ef!important;color:#27ae60!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .badge-warn{background:#fef3e2!important;color:#e67e22!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .badge-danger{background:#fdecea!important;color:#c0392b!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .badge-gray{background:#f0f0f0!important;color:#555!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .exp-danger{color:#c0392b!important;font-weight:700;}
+    .exp-warn{color:#e67e22!important;font-weight:600;}
+    .exp-ok{color:#27ae60!important;}
+    .payroll-paid{color:#27ae60!important;font-weight:600;}
+    .payroll-unpaid{color:#c0392b!important;font-weight:700;}
+    .status-active{color:#27ae60!important;}
+    .status-inactive{color:#c0392b!important;}
+    @page{margin:12mm 10mm;size:A4;}
   }
-  #print-area { display: none; }
 </style>
 </head>
 <body>
@@ -276,15 +274,15 @@
     <div class="page" id="page-reports">
       <div class="section-header">
         <h2>Reports</h2>
-        <button class="btn btn-primary" onclick="printReport()" style="display:flex;align-items:center;gap:6px;">&#128438; Save / Print PDF</button>
+        <button class="btn btn-primary" onclick="printReport()">&#128438;&nbsp; Save / Print PDF</button>
       </div>
       <div class="tabs">
         <div class="tab active" onclick="switchReportTab('overview',this)">Overview</div>
         <div class="tab" onclick="switchReportTab('per-company',this)">Per Company</div>
-        <div class="tab" onclick="switchReportTab('payroll-report',this)">Payroll</div>
-        <div class="tab" onclick="switchReportTab('employees-report',this)">Employees</div>
         <div class="tab" onclick="switchReportTab('expiries',this)">Document Expiries</div>
         <div class="tab" onclick="switchReportTab('financials',this)">Financials</div>
+        <div class="tab" onclick="switchReportTab('payroll-report',this)">Payroll</div>
+        <div class="tab" onclick="switchReportTab('employees-report',this)">Employees</div>
       </div>
       <div id="report-content"></div>
     </div>
@@ -369,7 +367,6 @@
   <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('ekey')">Cancel</button><button class="btn btn-primary" onclick="saveEkey()">Save</button></div>
 </div></div>
 
-<div id="print-area"></div>
 <div id="toast"></div>
 <script>
 // ── REAL COMPANY DATA FROM YOUR EXCEL FILES ──
@@ -523,28 +520,6 @@ function renderEkeys(s=''){const q=(s||'').toLowerCase();const cf=document.getEl
 function saveEkey(){const id=document.getElementById('ekey-id').value||uid();const o={id,name:document.getElementById('ek-name').value.trim(),company:document.getElementById('ek-company').value,cpr:document.getElementById('ek-cpr').value.trim(),ekey:document.getElementById('ek-ekey').value.trim(),password:document.getElementById('ek-password').value,notes:document.getElementById('ek-notes').value.trim()};if(!o.name){alert('Name required');return;}const i=db.ekeys.findIndex(k=>k.id===id);if(i>=0)db.ekeys[i]=o;else db.ekeys.push(o);saveDB();closeModal('ekey');renderEkeys();toast('Saved.');}
 function editEkey(id){const k=db.ekeys.find(x=>x.id===id);if(!k)return;populateSelect('ek-company',db.companies,'name');document.getElementById('ekey-id').value=k.id;document.getElementById('ek-name').value=k.name;document.getElementById('ek-company').value=k.company;document.getElementById('ek-cpr').value=k.cpr||'';document.getElementById('ek-ekey').value=k.ekey||'';document.getElementById('ek-password').value=k.password||'';document.getElementById('ek-notes').value=k.notes||'';document.getElementById('modal-ekey').classList.add('open');}
 function deleteEkey(id){if(!confirm('Delete?'))return;db.ekeys=db.ekeys.filter(k=>k.id!==id);saveDB();renderEkeys();toast('Deleted.');}
-
-function printReport(){
-  const area = document.getElementById('print-area');
-  const rc = document.getElementById('report-content');
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-BH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const tabNames = {
-    'overview':'Overview Report',
-    'per-company':'Per Company Report',
-    'expiries':'Document Expiry Report',
-    'financials':'Financial Report',
-    'payroll-report':'Payroll Report',
-    'employees-report':'Employee Report'
-  };
-  const title = tabNames[cr] || 'Report';
-  area.innerHTML = '<div class="print-header">' +
-    '<div><h1>OxfordHub &mdash; '+title+'</h1><div style="font-size:12px;color:#555;margin-top:4px;">Oxford Translation Center &amp; Group Companies</div></div>' +
-    '<div class="print-meta"><div><strong>Date:</strong> '+dateStr+'</div><div><strong>Companies:</strong> '+db.companies.length+'</div><div><strong>Employees:</strong> '+db.employees.length+'</div></div>' +
-    '</div>' + rc.innerHTML;
-  window.print();
-}
-
 let cr='overview';
 function switchReportTab(t,el){cr=t;document.querySelectorAll('#page-reports .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderReports(t);}
 function renderReports(t){const el=document.getElementById('report-content');
@@ -559,25 +534,86 @@ document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click
 else if(t==='payroll-report'){
 const months=[...new Set(db.payroll.map(p=>p.month))].sort().reverse();
 let html='';
-months.forEach(m=>{
-  const rows=db.payroll.filter(p=>p.month===m);
-  const total=rows.reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const paid=rows.filter(p=>p.status==='paid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const unpaid=rows.filter(p=>p.status==='unpaid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  html+='<div class="print-section-title">'+m+' &mdash; Total: BHD '+total.toFixed(3)+' | Paid: BHD '+paid.toFixed(3)+' | Unpaid: BHD '+unpaid.toFixed(3)+'</div>';
+if(!months.length){el.innerHTML='<div class="empty-state"><p>No payroll records yet.</p></div>';return;}
+months.forEach(function(m){
+  const rows=db.payroll.filter(function(p){return p.month===m;});
+  const total=rows.reduce(function(s,p){return s+(parseFloat(p.amount)||0);},0);
+  const paid=rows.filter(function(p){return p.status==='paid';}).reduce(function(s,p){return s+(parseFloat(p.amount)||0);},0);
+  const unpaid=total-paid;
+  html+='<div class="section-title">'+m+' &nbsp;|&nbsp; Total: BHD '+total.toFixed(3)+' &nbsp;|&nbsp; <span style="color:#27ae60;">Paid: BHD '+paid.toFixed(3)+'</span> &nbsp;|&nbsp; <span style="color:#c0392b;">Unpaid: BHD '+unpaid.toFixed(3)+'</span></div>';
   html+='<div class="table-wrap"><table><thead><tr><th>Type</th><th>Company / Employee</th><th>Amount (BHD)</th><th>Status</th><th>Paid On</th></tr></thead><tbody>';
-  html+=rows.map(p=>{
+  html+=rows.map(function(p){
     const isComp=p.type==='company';
-    const name=isComp?('<strong>'+getCompanyName(p.company)+'</strong> <small>(Company)</small>'):('<strong>'+getEmployeeName(p.employee)+'</strong> &mdash; '+getCompanyName(p.company));
+    const name=isComp?('<strong>'+getCompanyName(p.company)+'</strong>'):('<strong>'+getEmployeeName(p.employee)+'</strong> &mdash; <small>'+getCompanyName(p.company)+'</small>');
     return '<tr><td>'+(isComp?'Company':'Individual')+'</td><td>'+name+'</td><td>BHD '+(parseFloat(p.amount)||0).toFixed(3)+'</td><td><span class="'+(p.status==='paid'?'payroll-paid':'payroll-unpaid')+'">'+(p.status==='paid'?'Paid':'Unpaid')+'</span></td><td>'+(p.date||'--')+'</td></tr>';
   }).join('');
-  html+='</tbody></table></div><br>';
+  html+='</tbody></table></div>';
 });
-el.innerHTML=html||'<div class="empty-state"><p>No payroll records yet.</p></div>';
+el.innerHTML=html;
 }
 else if(t==='employees-report'){
-el.innerHTML='<div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Company</th><th>CPR</th><th>Passport No.</th><th>Visa Expiry</th><th>Pass Expiry</th><th>Status</th><th>Nationality</th></tr></thead><tbody>'+
-db.employees.map((e,i)=>'<tr><td style="color:#999;">'+(i+1)+'</td><td><strong>'+e.name+'</strong></td><td>'+getCompanyName(e.company)+'</td><td>'+(e.cpr||'--')+'</td><td>'+(e.passport||'--')+'</td><td class="'+expiryClass(daysUntil(e.visaExp))+'">'+(e.visaExp||'--')+'</td><td class="'+expiryClass(daysUntil(e.passExp))+'">'+(e.passExp||'--')+'</td><td>'+getDocStatus(e.visaExp)+'</td><td>'+(e.nationality||'--')+'</td></tr>').join('')+
+el.innerHTML='<div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Nationality</th><th>Company</th><th>CPR</th><th>Passport</th><th>Visa Expiry</th><th>Pass Expiry</th><th>Status</th></tr></thead><tbody>'+
+db.employees.map(function(e,i){
+  const vd=daysUntil(e.visaExp);
+  const pd=daysUntil(e.passExp);
+  const vc=vd===null?'':vd<0?'exp-danger':vd<=30?'exp-danger':vd<=60?'exp-warn':'exp-ok';
+  const pc=pd===null?'':pd<0?'exp-danger':pd<=30?'exp-danger':pd<=60?'exp-warn':'exp-ok';
+  const st=vd===null?'<span class="badge badge-gray">No Date</span>':vd<0?'<span class="badge badge-danger">Expired</span>':vd<=60?'<span class="badge badge-warn">Expiring Soon</span>':'<span class="badge badge-ok">Active</span>';
+  return '<tr><td style="color:#999;">'+(i+1)+'</td><td><strong>'+e.name+'</strong></td><td>'+(e.nationality||'--')+'</td><td>'+getCompanyName(e.company)+'</td><td>'+(e.cpr||'--')+'</td><td>'+(e.passport||'--')+'</td><td class="'+vc+'">'+(e.visaExp||'--')+'</td><td class="'+pc+'">'+(e.passExp||'--')+'</td><td>'+st+'</td></tr>';
+}).join('')+
 '</tbody></table></div>';
 }
-}>
+}));
+
+function printReport(){
+  const rc=document.getElementById('report-content');
+  const now=new Date();
+  const ds=now.toLocaleDateString('en-BH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const titles={'overview':'Overview Report','per-company':'Per Company Report','expiries':'Document Expiry Report','financials':'Financial Report','payroll-report':'Payroll Report','employees-report':'Employee Report'};
+  const win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>OxfordHub - '+titles[cr]+'</title><style>');
+  win.document.write('body{font-family:Inter,Arial,sans-serif;font-size:11px;color:#0a0a0a;margin:0;padding:20px;}');
+  win.document.write('.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #000;}');
+  win.document.write('.ph h1{font-size:20px;font-weight:700;margin:0;}');
+  win.document.write('.ph .pm{text-align:right;font-size:10px;color:#555;}');
+  win.document.write('table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:16px;}');
+  win.document.write('th{background:#0a0a0a;color:white;padding:7px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:0.5px;}');
+  win.document.write('td{padding:6px 10px;border-bottom:1px solid #e0e0e0;}');
+  win.document.write('tr:nth-child(even) td{background:#f9f9f9;}');
+  win.document.write('.ps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}');
+  win.document.write('.ps-card{border:1px solid #e0e0e0;border-radius:4px;padding:12px 14px;}');
+  win.document.write('.ps-label{font-size:9px;font-weight:700;text-transform:uppercase;color:#999;margin-bottom:3px;}');
+  win.document.write('.ps-value{font-size:20px;font-weight:700;}');
+  win.document.write('.st{font-size:12px;font-weight:700;margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid #e0e0e0;}');
+  win.document.write('.ok{color:#27ae60;font-weight:600;}.warn{color:#e67e22;font-weight:600;}.danger{color:#c0392b;font-weight:700;}');
+  win.document.write('.bok{background:#e8f8ef;color:#27ae60;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;}');
+  win.document.write('.bwarn{background:#fef3e2;color:#e67e22;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;}');
+  win.document.write('.bdanger{background:#fdecea;color:#c0392b;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;}');
+  win.document.write('.bgray{background:#f0f0f0;color:#555;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;}');
+  win.document.write('@page{margin:12mm 10mm;size:A4;}');
+  win.document.write('</style></head><body>');
+  win.document.write('<div class="ph"><div><h1>OxfordHub &mdash; '+titles[cr]+'</h1><div style="font-size:11px;color:#555;margin-top:3px;">Oxford Translation Center &amp; Group Companies</div></div><div class="pm"><div><b>Date:</b> '+ds+'</div><div><b>Companies:</b> '+db.companies.length+'</div><div><b>Employees:</b> '+db.employees.length+'</div></div></div>');
+  win.document.write(rc.innerHTML
+    .replace(/class="exp-danger"/g,'style="color:#c0392b;font-weight:700;"')
+    .replace(/class="exp-warn"/g,'style="color:#e67e22;font-weight:600;"')
+    .replace(/class="exp-ok"/g,'style="color:#27ae60;"')
+    .replace(/class="payroll-paid"/g,'style="color:#27ae60;font-weight:600;"')
+    .replace(/class="payroll-unpaid"/g,'style="color:#c0392b;font-weight:700;"')
+    .replace(/class="status-active"/g,'style="color:#27ae60;"')
+    .replace(/class="status-inactive"/g,'style="color:#c0392b;"')
+    .replace(/class="badge badge-ok"/g,'class="bok"')
+    .replace(/class="badge badge-warn"/g,'class="bwarn"')
+    .replace(/class="badge badge-danger"/g,'class="bdanger"')
+    .replace(/class="badge badge-gray"/g,'class="bgray"')
+    .replace(/class="table-wrap"/g,'style="margin-bottom:16px;"')
+    .replace(/class="section-title"/g,'class="st"')
+    .replace(/<div class="actions-td">.*?<\/div>/gs,'')
+  );
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(()=>{win.print();},500);
+}
+</script>
+</body>
+</html>
