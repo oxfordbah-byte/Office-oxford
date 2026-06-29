@@ -274,10 +274,15 @@
     </div>
 
     <div class="page" id="page-reports">
-      <div class="section-header"><h2>Reports</h2></div>
+      <div class="section-header">
+        <h2>Reports</h2>
+        <button class="btn btn-primary" onclick="printReport()" style="display:flex;align-items:center;gap:6px;">&#128438; Save / Print PDF</button>
+      </div>
       <div class="tabs">
         <div class="tab active" onclick="switchReportTab('overview',this)">Overview</div>
         <div class="tab" onclick="switchReportTab('per-company',this)">Per Company</div>
+        <div class="tab" onclick="switchReportTab('payroll-report',this)">Payroll</div>
+        <div class="tab" onclick="switchReportTab('employees-report',this)">Employees</div>
         <div class="tab" onclick="switchReportTab('expiries',this)">Document Expiries</div>
         <div class="tab" onclick="switchReportTab('financials',this)">Financials</div>
       </div>
