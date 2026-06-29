@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OxfordHub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gray-50: #f9f9f9;
+    --gray-100: #f0f0f0;
+    --gray-200: #e0e0e0;
+    --gray-400: #999;
+    --gray-600: #555;
+    --gray-800: #222;
+    --accent: #0a0a0a;
+    --danger: #c0392b;
+    --warn: #e67e22;
+    --ok: #27ae60;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --sidebar-w: 220px;
+    --radius: 6px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--gray-50);
+    color: var(--black);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── LAYOUT ── */
+  #app { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo h1 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .sidebar-logo span { color: var(--gray-400); font-size: 11px; display: block; margin-top: 2px; }
+  .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+  .nav-section { padding: 0 12px; margin-bottom: 4px; }
+  .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--gray-400); text-transform: uppercase; padding: 8px 8px 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 8px; border-radius: var(--radius);
+    cursor: pointer; color: rgba(255,255,255,0.65);
+    font-size: 13.5px; font-weight: 400;
+    transition: all 0.15s;
+    margin-bottom: 1px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .nav-item.active { background: var(--white); color: var(--black); font-weight: 600; }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-badge {
+    margin-left: auto; background: var(--danger);
+    color: white; font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 10px;
+  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    padding: 7px 16px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.15s; font-family: var(--font-body);
+  }
+  .btn-primary { background: var(--black); color: var(--white); }
+  .btn-primary:hover { background: var(--gray-800); }
+  .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--gray-200); }
+  .btn-outline:hover { border-color: var(--black); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  .content { padding: 28px; }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── STATS GRID ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .stat-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-400); margin-bottom: 8px; }
+  .stat-card .value { font-family: var(--font-display); font-size: 28px; font-weight: 700; }
+  .stat-card .sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+  .stat-card.warn-card { border-left: 3px solid var(--warn); }
+  .stat-card.danger-card { border-left: 3px solid var(--danger); }
+  .stat-card.ok-card { border-left: 3px solid var(--ok); }
+
+  /* ── ALERTS ── */
+  .alert-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+  .alert-box {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .alert-box h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .alert-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+    font-size: 13px;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-danger { background: #fdecea; color: var(--danger); }
+  .badge-warn { background: #fef3e2; color: var(--warn); }
+  .badge-ok { background: #e8f8ef; color: var(--ok); }
+  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── TABLE ── */
+  .table-wrap { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
+  .table-toolbar {
+    padding: 14px 18px; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .search-input {
+    padding: 7px 12px; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    font-size: 13px; font-family: var(--font-body); width: 240px;
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--black); }
+  select.filter-select {
+    padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    font-size: 13px; font-family: var(--font-body); background: white; outline: none; cursor: pointer;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.7px;
+    color: var(--gray-400); padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    background: var(--gray-50);
+  }
+  td { padding: 11px 16px; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+  .actions-td { display: flex; gap: 6px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 10px;
+    width: 540px; max-width: 95vw; max-height: 90vh;
+    overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: white; z-index: 10;
+  }
+  .modal-header h2 { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+  .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gray-400); line-height: 1; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; justify-content: flex-end; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--gray-600); }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 8px 11px; border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius); font-size: 13px;
+    font-family: var(--font-body); outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--black); }
+  .form-group textarea { resize: vertical; min-height: 70px; }
+  .form-section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--gray-400);
+    margin: 18px 0 10px; padding-top: 14px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  /* ── DETAIL PANEL ── */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .detail-item { }
+  .detail-item .dl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--gray-400); margin-bottom: 3px; }
+  .detail-item .dv { font-size: 14px; font-weight: 500; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-100); margin-bottom: 22px; }
+  .tab {
+    padding: 10px 18px; font-size: 13px; font-weight: 600;
+    cursor: pointer; color: var(--gray-400); border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.15s;
+  }
+  .tab.active { color: var(--black); border-bottom-color: var(--black); }
+  .tab:hover:not(.active) { color: var(--gray-600); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── EXPIRY COLORS ── */
+  .exp-danger { color: var(--danger); font-weight: 600; }
+  .exp-warn { color: var(--warn); font-weight: 600; }
+  .exp-ok { color: var(--ok); }
+
+  /* ── NOTIFICATION TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--black); color: white;
+    padding: 12px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 999; opacity: 0; transform: translateY(8px);
+    transition: all 0.2s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── CARD GRID (companies) ── */
+  .company-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .company-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 18px 20px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .company-card:hover { border-color: var(--black); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .company-card h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .company-card .meta { font-size: 12px; color: var(--gray-400); margin-bottom: 12px; }
+  .company-card .card-stats { display: flex; gap: 16px; }
+  .company-card .cs { font-size: 12px; }
+  .company-card .cs strong { display: block; font-size: 18px; font-family: var(--font-display); }
+  .company-card .card-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
+
+  /* Payroll status */
+  .payroll-paid { color: var(--ok); font-weight: 600; }
+  .payroll-unpaid { color: var(--danger); font-weight: 700; }
+
+  /* ── MONEY ── */
+  .amount-positive { color: var(--ok); font-weight: 600; }
+  .amount-negative { color: var(--danger); font-weight: 600; }
+  .amount-pending { color: var(--warn); font-weight: 600; }
+
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .section-header h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h1>OxfordHub</h1>
+    <span>Management Platform</span>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" onclick="navigate('dashboard')">
+        <span class="icon">◼</span> Dashboard
+        <span class="nav-badge" id="alert-badge">0</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Management</div>
+      <div class="nav-item" onclick="navigate('companies')"><span class="icon">⬡</span> Companies</div>
+      <div class="nav-item" onclick="navigate('employees')"><span class="icon">◈</span> Employees</div>
+      <div class="nav-item" onclick="navigate('payroll')"><span class="icon">◎</span> Payroll</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Finance</div>
+      <div class="nav-item" onclick="navigate('money')"><span class="icon">◇</span> Receivables</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Access</div>
+      <div class="nav-item" onclick="navigate('ekeys')"><span class="icon">◉</span> eKey Vault</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Reports</div>
+      <div class="nav-item" onclick="navigate('reports')"><span class="icon">▦</span> Reports</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-actions">
+      <span id="topbar-date" style="font-size:12px;color:#999;"></span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid" id="dash-stats"></div>
+      <div class="alert-row" id="dash-alerts"></div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <strong style="font-size:13px;font-weight:700;">Upcoming Expirations (Next 60 Days)</strong>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Company</th><th>Type</th><th>Expires</th><th>Days Left</th>
+          </tr></thead>
+          <tbody id="dash-expiry-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ COMPANIES ══════════ -->
+    <div class="page" id="page-companies">
+      <div class="section-header">
+        <h2>Companies</h2>
+        <button class="btn btn-primary" onclick="openModal('company')">+ Add Company</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <input class="search-input" placeholder="Search companies…" oninput="renderCompanies(this.value)" />
+      </div>
+      <div class="company-grid" id="company-grid"></div>
+    </div>
+
+    <!-- ══════════ EMPLOYEES ══════════ -->
+    <div class="page" id="page-employees">
+      <div class="section-header">
+        <h2>Employees</h2>
+        <button class="btn btn-primary" onclick="openModal('employee')">+ Add Employee</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search employees…" oninput="renderEmployees(this.value)" />
+          <select class="filter-select" id="emp-company-filter" onchange="renderEmployees()">
+            <option value="">All Companies</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Name</th><th>Company</th><th>CPR</th><th>CPR Expiry</th><th>Passport Expiry</th><th>Visa Expiry</th><th>Salary (BHD)</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="employee-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ PAYROLL ══════════ -->
+    <div class="page" id="page-payroll">
+      <div class="section-header">
+        <h2>Payroll</h2>
+        <button class="btn btn-primary" onclick="openModal('payroll')">+ Record Payment</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchPayrollTab('all', this)">All</div>
+        <div class="tab" onclick="switchPayrollTab('unpaid', this)">Unpaid</div>
+        <div class="tab" onclick="switchPayrollTab('paid', this)">Paid</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search…" oninput="renderPayroll(this.value)" />
+          <select class="filter-select" id="payroll-company-filter" onchange="renderPayroll()">
+            <option value="">All Companies</option>
+          </select>
+          <select class="filter-select" id="payroll-month-filter" onchange="renderPayroll()">
+            <option value="">All Months</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Employee</th><th>Company</th><th>Month</th><th>Amount (BHD)</th><th>Status</th><th>Paid On</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="payroll-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ RECEIVABLES ══════════ -->
+    <div class="page" id="page-money">
+      <div class="section-header">
+        <h2>Receivables</h2>
+        <button class="btn btn-primary" onclick="openModal('money')">+ Add Transaction</button>
+      </div>
+      <div class="stats-grid" style="margin-bottom:20px;" id="money-stats"></div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search…" oninput="renderMoney(this.value)" />
+          <select class="filter-select" id="money-company-filter" onchange="renderMoney()">
+            <option value="">All Companies</option>
+          </select>
+          <select class="filter-select" id="money-status-filter" onchange="renderMoney()">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Company</th><th>Bank Ref</th><th>Description</th><th>Cost (BHD)</th><th>Service Fee</th><th>Total Due</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="money-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ EKEY VAULT ══════════ -->
+    <div class="page" id="page-ekeys">
+      <div class="section-header">
+        <h2>eKey Vault</h2>
+        <button class="btn btn-primary" onclick="openModal('ekey')">+ Add Credential</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search by name or CPR…" oninput="renderEkeys(this.value)" />
+          <select class="filter-select" id="ekey-company-filter" onchange="renderEkeys()">
+            <option value="">All Companies</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Name</th><th>Company</th><th>CPR</th><th>eKey</th><th>Password</th><th>Notes</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="ekey-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ REPORTS ══════════ -->
+    <div class="page" id="page-reports">
+      <div class="section-header"><h2>Reports</h2></div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchReportTab('overview', this)">Overview</div>
+        <div class="tab" onclick="switchReportTab('per-company', this)">Per Company</div>
+        <div class="tab" onclick="switchReportTab('expiries', this)">Document Expiries</div>
+        <div class="tab" onclick="switchReportTab('financials', this)">Financials</div>
+      </div>
+      <div id="report-content"></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Company Modal -->
+<div class="modal-overlay" id="modal-company">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="company-modal-title">Add Company</h2>
+      <button class="modal-close" onclick="closeModal('company')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="company-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Name *</label>
+          <input id="c-name" placeholder="Oxford Translation Center" />
+        </div>
+        <div class="form-group">
+          <label>CR Number</label>
+          <input id="c-cr" placeholder="12345" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CR Expiry Date</label>
+          <input id="c-cr-exp" type="date" />
+        </div>
+        <div class="form-group">
+          <label>Bank Account / Ref</label>
+          <input id="c-bank" placeholder="e.g. NBB-001" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="c-notes" placeholder="Any additional info…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('company')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCompany()">Save Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal-overlay" id="modal-employee">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="employee-modal-title">Add Employee</h2>
+      <button class="modal-close" onclick="closeModal('employee')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="employee-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input id="e-name" placeholder="Mohammed Al-Rashid" />
+        </div>
+        <div class="form-group">
+          <label>Company *</label>
+          <select id="e-company"></select>
+        </div>
+      </div>
+      <div class="form-section-title">Identity Documents</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CPR Number</label>
+          <input id="e-cpr" placeholder="000000000" />
+        </div>
+        <div class="form-group">
+          <label>CPR Expiry</label>
+          <input id="e-cpr-exp" type="date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Passport Number</label>
+          <input id="e-passport" placeholder="AB1234567" />
+        </div>
+        <div class="form-group">
+          <label>Passport Expiry</label>
+          <input id="e-pass-exp" type="date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Visa / Work Permit Expiry</label>
+          <input id="e-visa-exp" type="date" />
+        </div>
+        <div class="form-group">
+          <label>Nationality</label>
+          <input id="e-nationality" placeholder="Indian" />
+        </div>
+      </div>
+      <div class="form-section-title">Employment</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Job Title</label>
+          <input id="e-title" placeholder="Translator" />
+        </div>
+        <div class="form-group">
+          <label>Salary (BHD)</label>
+          <input id="e-salary" type="number" placeholder="250" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Join Date</label>
+          <input id="e-join" type="date" />
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <input id="e-notes" placeholder="Any notes…" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('employee')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payroll Modal -->
+<div class="modal-overlay" id="modal-payroll">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Record Payroll</h2>
+      <button class="modal-close" onclick="closeModal('payroll')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="payroll-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company</label>
+          <select id="p-company" onchange="populatePayrollEmployees()"></select>
+        </div>
+        <div class="form-group">
+          <label>Employee *</label>
+          <select id="p-employee"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Payroll Month *</label>
+          <input id="p-month" type="month" />
+        </div>
+        <div class="form-group">
+          <label>Amount (BHD) *</label>
+          <input id="p-amount" type="number" placeholder="250" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select id="p-status">
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input id="p-date" type="date" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="p-notes" placeholder="Bank transfer ref, etc."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('payroll')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePayroll()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Money Modal -->
+<div class="modal-overlay" id="modal-money">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add Transaction</h2>
+      <button class="modal-close" onclick="closeModal('money')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="money-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company *</label>
+          <select id="m-company"></select>
+        </div>
+        <div class="form-group">
+          <label>Bank Account Ref</label>
+          <input id="m-bank" placeholder="e.g. NBB-001" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Description *</label>
+          <input id="m-desc" placeholder="Visa fee – Mohammed Al-Rashid" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Our Cost (BHD)</label>
+          <input id="m-cost" type="number" placeholder="50" />
+        </div>
+        <div class="form-group">
+          <label>Service Charge (BHD)</label>
+          <input id="m-fee" type="number" placeholder="10" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select id="m-status">
+            <option value="pending">Pending (Not Paid by Client)</option>
+            <option value="paid">Paid by Client</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input id="m-date" type="date" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="m-notes"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('money')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMoney()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- eKey Modal -->
+<div class="modal-overlay" id="modal-ekey">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add eKey Credential</h2>
+      <button class="modal-close" onclick="closeModal('ekey')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ekey-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Person Name *</label>
+          <input id="ek-name" placeholder="Mohammed Al-Rashid" />
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <select id="ek-company"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CPR Number</label>
+          <input id="ek-cpr" placeholder="000000000" />
+        </div>
+        <div class="form-group">
+          <label>eKey</label>
+          <input id="ek-ekey" placeholder="EK-XXXXXXXX" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Password</label>
+          <input id="ek-password" placeholder="Plain text password" />
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="ek-notes" placeholder="Any additional info…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('ekey')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEkey()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA STORE
+// ══════════════════════════════════════════
+let db = {
+  companies: [],
+  employees: [],
+  payroll: [],
+  money: [],
+  ekeys: []
+};
+
+// Load from localStorage
+function loadDB() {
+  const saved = localStorage.getItem('oxfordhub_db');
+  if (saved) {
+    try { db = JSON.parse(saved); } catch(e) {}
+  }
+  // Seed demo data if empty
+  if (db.companies.length === 0) {
+    seedDemo();
+  }
+}
+
+function saveDB() {
+  localStorage.setItem('oxfordhub_db', JSON.stringify(db));
+}
+
+function seedDemo() {
+  const today = new Date();
+  const fmt = (d) => d.toISOString().split('T')[0];
+  const addDays = (n) => { const d = new Date(today); d.setDate(d.getDate()+n); return fmt(d); };
+
+  db.companies = [
+    { id: 'c1', name: 'Oxford Translation Center', cr: 'CR-12345', crExp: addDays(45), bank: 'NBB-001', notes: 'Main company' },
+    { id: 'c2', name: 'Manama Business Solutions', cr: 'CR-67890', crExp: addDays(120), bank: 'NBB-001', notes: 'Same bank as Oxford' },
+    { id: 'c3', name: 'Gulf Services WLL', cr: 'CR-11111', crExp: addDays(-10), bank: 'BISB-002', notes: 'CR expired!' },
+  ];
+  db.employees = [
+    { id: 'e1', name: 'Mohammed Al-Rashid', company: 'c1', cpr: '900123456', cprExp: addDays(20), passport: 'AB123456', passExp: addDays(300), visaExp: addDays(15), nationality: 'Indian', title: 'Senior Translator', salary: 350, join: '2022-01-10', notes: '' },
+    { id: 'e2', name: 'Fatima Al-Mansoori', company: 'c1', cpr: '910234567', cprExp: addDays(200), passport: 'CD789012', passExp: addDays(5), visaExp: addDays(180), nationality: 'Filipino', title: 'Translator', salary: 280, join: '2023-03-15', notes: '' },
+    { id: 'e3', name: 'Ahmed Hassan', company: 'c2', cpr: '850345678', cprExp: addDays(90), passport: 'EF345678', passExp: addDays(400), visaExp: addDays(50), nationality: 'Egyptian', title: 'Office Manager', salary: 400, join: '2021-06-01', notes: '' },
+    { id: 'e4', name: 'Priya Sharma', company: 'c3', cpr: '920456789', cprExp: addDays(-5), passport: 'GH901234', passExp: addDays(60), visaExp: addDays(-20), nationality: 'Indian', title: 'Clerk', salary: 200, join: '2023-07-20', notes: '' },
+  ];
+  db.payroll = [
+    { id: 'p1', company: 'c1', employee: 'e1', month: '2026-05', amount: 350, status: 'paid', date: '2026-05-28', notes: '' },
+    { id: 'p2', company: 'c1', employee: 'e2', month: '2026-05', amount: 280, status: 'paid', date: '2026-05-28', notes: '' },
+    { id: 'p3', company: 'c1', employee: 'e1', month: '2026-06', amount: 350, status: 'unpaid', date: '', notes: '' },
+    { id: 'p4', company: 'c1', employee: 'e2', month: '2026-06', amount: 280, status: 'unpaid', date: '', notes: '' },
+    { id: 'p5', company: 'c2', employee: 'e3', month: '2026-06', amount: 400, status: 'unpaid', date: '', notes: '' },
+  ];
+  db.money = [
+    { id: 'm1', company: 'c1', bank: 'NBB-001', desc: 'Visa renewal – Mohammed Al-Rashid', cost: 50, fee: 10, status: 'pending', date: '2026-06-10', notes: '' },
+    { id: 'm2', company: 'c2', bank: 'NBB-001', desc: 'LMRA fee – Ahmed Hassan', cost: 120, fee: 20, status: 'paid', date: '2026-06-01', notes: '' },
+    { id: 'm3', company: 'c1', bank: 'NBB-001', desc: 'CPR renewal – Fatima', cost: 30, fee: 5, status: 'pending', date: '2026-06-20', notes: '' },
+  ];
+  db.ekeys = [
+    { id: 'ek1', name: 'Mohammed Al-Rashid', company: 'c1', cpr: '900123456', ekey: 'EK-A1B2C3D4', password: 'Pass@2024', notes: '' },
+    { id: 'ek2', name: 'Fatima Al-Mansoori', company: 'c1', cpr: '910234567', ekey: 'EK-E5F6G7H8', password: 'Fatima123', notes: '' },
+  ];
+  saveDB();
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function uid() { return '_' + Math.random().toString(36).substr(2,9); }
+
+function getCompanyName(id) {
+  const c = db.companies.find(x => x.id === id);
+  return c ? c.name : '—';
+}
+function getEmployeeName(id) {
+  const e = db.employees.find(x => x.id === id);
+  return e ? e.name : '—';
+}
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(dateStr);
+  return Math.round((d - today) / 86400000);
+}
+
+function expiryClass(days) {
+  if (days === null) return '';
+  if (days < 0) return 'exp-danger';
+  if (days <= 30) return 'exp-danger';
+  if (days <= 60) return 'exp-warn';
+  return 'exp-ok';
+}
+
+function expiryLabel(dateStr) {
+  if (!dateStr) return '—';
+  const days = daysUntil(dateStr);
+  const cls = expiryClass(days);
+  const label = days < 0 ? `EXPIRED (${Math.abs(days)}d ago)` : days === 0 ? 'Today!' : `${days}d`;
+  return `<span class="${cls}">${dateStr} <small>(${label})</small></span>`;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function formatBHD(n) {
+  return 'BHD ' + (parseFloat(n)||0).toFixed(3);
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+const pageTitles = {
+  dashboard: 'Dashboard', companies: 'Companies',
+  employees: 'Employees', payroll: 'Payroll',
+  money: 'Receivables', ekeys: 'eKey Vault', reports: 'Reports'
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().startsWith(pageTitles[page].toLowerCase().slice(0,4))) {
+      n.classList.add('active');
+    }
+  });
+  document.getElementById('page-title').textContent = pageTitles[page];
+  renderPage(page);
+}
+
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  else if (page === 'companies') { renderCompanies(); }
+  else if (page === 'employees') { populateCompanyFilters(); renderEmployees(); }
+  else if (page === 'payroll') { populatePayrollFilters(); renderPayroll(); }
+  else if (page === 'money') { populateMoneyFilters(); renderMoney(); renderMoneyStats(); }
+  else if (page === 'ekeys') { populateEkeyFilters(); renderEkeys(); }
+  else if (page === 'reports') renderReports('overview');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard() {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Count alerts
+  let alerts = 0;
+  const expiries = [];
+
+  db.employees.forEach(emp => {
+    const checks = [
+      { type: 'CPR', date: emp.cprExp },
+      { type: 'Passport', date: emp.passExp },
+      { type: 'Visa', date: emp.visaExp },
+    ];
+    checks.forEach(c => {
+      const d = daysUntil(c.date);
+      if (d !== null && d <= 60) {
+        alerts++;
+        expiries.push({ name: emp.name, company: getCompanyName(emp.company), type: c.type, date: c.date, days: d });
+      }
+    });
+  });
+  db.companies.forEach(co => {
+    const d = daysUntil(co.crExp);
+    if (d !== null && d <= 60) {
+      alerts++;
+      expiries.push({ name: co.name, company: '—', type: 'CR', date: co.crExp, days: d });
+    }
+  });
+
+  const unpaidPayroll = db.payroll.filter(p => p.status === 'unpaid').length;
+  const pendingMoney = db.money.filter(m => m.status === 'pending').reduce((s, m) => s + (parseFloat(m.cost)||0) + (parseFloat(m.fee)||0), 0);
+
+  document.getElementById('alert-badge').textContent = alerts + unpaidPayroll;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="label">Companies</div><div class="value">${db.companies.length}</div><div class="sub">Active</div></div>
+    <div class="stat-card"><div class="label">Employees</div><div class="value">${db.employees.length}</div><div class="sub">Total</div></div>
+    <div class="stat-card danger-card"><div class="label">Doc Alerts</div><div class="value">${alerts}</div><div class="sub">Within 60 days</div></div>
+    <div class="stat-card warn-card"><div class="label">Unpaid Payroll</div><div class="value">${unpaidPayroll}</div><div class="sub">Records</div></div>
+    <div class="stat-card warn-card"><div class="label">Pending Dues</div><div class="value">BHD ${pendingMoney.toFixed(3)}</div><div class="sub">Awaiting payment</div></div>
+    <div class="stat-card"><div class="label">eKeys Stored</div><div class="value">${db.ekeys.length}</div><div class="sub">Credentials</div></div>
+  `;
+
+  // Alert boxes
+  const criticalExp = expiries.filter(e => e.days <= 30).slice(0,5);
+  const unpaidList = db.payroll.filter(p => p.status === 'unpaid').slice(0,5);
+
+  document.getElementById('dash-alerts').innerHTML = `
+    <div class="alert-box">
+      <h3>🔴 Critical Expirations (≤30 days)</h3>
+      ${criticalExp.length === 0 ? '<div style="color:#999;font-size:13px;padding:8px 0;">No critical expirations</div>' :
+        criticalExp.map(e => `
+          <div class="alert-item">
+            <div>
+              <strong>${e.name}</strong>
+              <div style="font-size:11px;color:#999;">${e.company} · ${e.type}</div>
+            </div>
+            <span class="badge ${e.days < 0 ? 'badge-danger' : e.days <= 7 ? 'badge-danger' : 'badge-warn'}">
+              ${e.days < 0 ? 'EXPIRED' : e.days + 'd left'}
+            </span>
+          </div>`).join('')}
+    </div>
+    <div class="alert-box">
+      <h3>🟠 Unpaid Payroll</h3>
+      ${unpaidList.length === 0 ? '<div style="color:#999;font-size:13px;padding:8px 0;">All payroll up to date</div>' :
+        unpaidList.map(p => `
+          <div class="alert-item">
+            <div>
+              <strong>${getEmployeeName(p.employee)}</strong>
+              <div style="font-size:11px;color:#999;">${getCompanyName(p.company)} · ${p.month}</div>
+            </div>
+            <span class="badge badge-danger">BHD ${(parseFloat(p.amount)||0).toFixed(3)}</span>
+          </div>`).join('')}
+    </div>
+  `;
+
+  // Expiry table (60 days)
+  expiries.sort((a,b) => a.days - b.days);
+  document.getElementById('dash-expiry-table').innerHTML = expiries.length === 0
+    ? `<tr><td colspan="5"><div class="empty-state"><div class="icon">✓</div><p>No expirations in next 60 days</p></div></td></tr>`
+    : expiries.map(e => `
+      <tr>
+        <td><strong>${e.name}</strong></td>
+        <td>${e.company}</td>
+        <td><span class="badge badge-gray">${e.type}</span></td>
+        <td>${e.date}</td>
+        <td class="${expiryClass(e.days)}">${e.days < 0 ? 'EXPIRED' : e.days + ' days'}</td>
+      </tr>`).join('');
+}
+
+// ══════════════════════════════════════════
+// COMPANIES
+// ══════════════════════════════════════════
+function renderCompanies(search = '') {
+  const q = search.toLowerCase();
+  const list = db.companies.filter(c => !q || c.name.toLowerCase().includes(q) || (c.cr||'').toLowerCase().includes(q));
+
+  if (list.length === 0) {
+    document.getElementById('company-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">⬡</div><p>No companies yet. Add your first one.</p></div>`;
+    return;
+  }
+
+  document.getElementById('company-grid').innerHTML = list.map(c => {
+    const empCount = db.employees.filter(e => e.company === c.id).length;
+    const days = daysUntil(c.crExp);
+    const crClass = expiryClass(days);
+    return `
+      <div class="company-card">
+        <h3>${c.name}</h3>
+        <div class="meta">CR: ${c.cr||'—'} &nbsp;·&nbsp; Bank: ${c.bank||'—'}</div>
+        <div class="card-stats">
+          <div class="cs"><strong>${empCount}</strong>Employees</div>
+          <div class="cs"><strong class="${crClass}">${days !== null ? (days < 0 ? 'EXP' : days+'d') : '—'}</strong>CR Expiry</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-outline btn-sm" onclick="editCompany('${c.id}')">Edit</button>
+          <button class="btn btn-outline btn-sm" onclick="navigate('employees');document.getElementById('emp-company-filter').value='${c.id}';renderEmployees()">View Staff</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCompany('${c.id}')">Delete</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openModal(type) {
+  // clear fields
+  if (type === 'company') {
+    ['company-id','c-name','c-cr','c-cr-exp','c-bank','c-notes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    document.getElementById('company-modal-title').textContent = 'Add Company';
+  } else if (type === 'employee') {
+    ['employee-id','e-name','e-cpr','e-cpr-exp','e-passport','e-pass-exp','e-visa-exp','e-nationality','e-title','e-salary','e-join','e-notes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    populateSelect('e-company', db.companies, 'name');
+    document.getElementById('employee-modal-title').textContent = 'Add Employee';
+  } else if (type === 'payroll') {
+    ['payroll-id','p-month','p-amount','p-date','p-notes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    populateSelect('p-company', db.companies, 'name');
+    populatePayrollEmployees();
+    document.getElementById('p-status').value = 'paid';
+  } else if (type === 'money') {
+    ['money-id','m-bank','m-desc','m-cost','m-fee','m-notes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    populateSelect('m-company', db.companies, 'name');
+    document.getElementById('m-status').value = 'pending';
+    document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
+  } else if (type === 'ekey') {
+    ['ekey-id','ek-name','ek-cpr','ek-ekey','ek-password','ek-notes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    populateSelect('ek-company', db.companies, 'name');
+  }
+  document.getElementById('modal-' + type).classList.add('open');
+}
+
+function closeModal(type) {
+  document.getElementById('modal-' + type).classList.remove('open');
+}
+
+function populateSelect(selectId, items, labelKey, valueKey='id') {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = items.map(i => `<option value="${i[valueKey]}">${i[labelKey]}</option>`).join('');
+}
+
+function saveCompany() {
+  const id = document.getElementById('company-id').value || uid();
+  const obj = {
+    id, name: document.getElementById('c-name').value.trim(),
+    cr: document.getElementById('c-cr').value.trim(),
+    crExp: document.getElementById('c-cr-exp').value,
+    bank: document.getElementById('c-bank').value.trim(),
+    notes: document.getElementById('c-notes').value.trim()
+  };
+  if (!obj.name) { alert('Company name required'); return; }
+  const idx = db.companies.findIndex(c => c.id === id);
+  if (idx >= 0) db.companies[idx] = obj; else db.companies.push(obj);
+  saveDB(); closeModal('company'); renderCompanies();
+  toast('Company saved.');
+}
+
+function editCompany(id) {
+  const c = db.companies.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('company-id').value = c.id;
+  document.getElementById('c-name').value = c.name;
+  document.getElementById('c-cr').value = c.cr||'';
+  document.getElementById('c-cr-exp').value = c.crExp||'';
+  document.getElementById('c-bank').value = c.bank||'';
+  document.getElementById('c-notes').value = c.notes||'';
+  document.getElementById('company-modal-title').textContent = 'Edit Company';
+  document.getElementById('modal-company').classList.add('open');
+}
+
+function deleteCompany(id) {
+  if (!confirm('Delete this company? This will not delete employees.')) return;
+  db.companies = db.companies.filter(c => c.id !== id);
+  saveDB(); renderCompanies(); toast('Company deleted.');
+}
+
+// ══════════════════════════════════════════
+// EMPLOYEES
+// ══════════════════════════════════════════
+function populateCompanyFilters() {
+  const opts = '<option value="">All Companies</option>' + db.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('emp-company-filter').innerHTML = opts;
+}
+
+function renderEmployees(search = '') {
+  const q = (search || document.querySelector('#page-employees .search-input')?.value || '').toLowerCase();
+  const cf = document.getElementById('emp-company-filter')?.value || '';
+  let list = db.employees.filter(e => {
+    const match = !q || e.name.toLowerCase().includes(q) || (e.cpr||'').includes(q) || (e.passport||'').toLowerCase().includes(q);
+    const co = !cf || e.company === cf;
+    return match && co;
+  });
+
+  if (list.length === 0) {
+    document.getElementById('employee-table').innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">◈</div><p>No employees found.</p></div></td></tr>`;
+    return;
+  }
+  document.getElementById('employee-table').innerHTML = list.map(e => `
+    <tr>
+      <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#999;">${e.title||''} · ${e.nationality||''}</span></td>
+      <td>${getCompanyName(e.company)}</td>
+      <td>${e.cpr||'—'}</td>
+      <td>${expiryLabel(e.cprExp)}</td>
+      <td>${expiryLabel(e.passExp)}</td>
+      <td>${expiryLabel(e.visaExp)}</td>
+      <td>${e.salary ? 'BHD '+parseFloat(e.salary).toFixed(3) : '—'}</td>
+      <td><div class="actions-td">
+        <button class="btn btn-outline btn-sm" onclick="editEmployee('${e.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${e.id}')">Del</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function saveEmployee() {
+  const id = document.getElementById('employee-id').value || uid();
+  const obj = {
+    id,
+    name: document.getElementById('e-name').value.trim(),
+    company: document.getElementById('e-company').value,
+    cpr: document.getElementById('e-cpr').value.trim(),
+    cprExp: document.getElementById('e-cpr-exp').value,
+    passport: document.getElementById('e-passport').value.trim(),
+    passExp: document.getElementById('e-pass-exp').value,
+    visaExp: document.getElementById('e-visa-exp').value,
+    nationality: document.getElementById('e-nationality').value.trim(),
+    title: document.getElementById('e-title').value.trim(),
+    salary: document.getElementById('e-salary').value,
+    join: document.getElementById('e-join').value,
+    notes: document.getElementById('e-notes').value.trim()
+  };
+  if (!obj.name) { alert('Name required'); return; }
+  const idx = db.employees.findIndex(e => e.id === id);
+  if (idx >= 0) db.employees[idx] = obj; else db.employees.push(obj);
+  saveDB(); closeModal('employee'); renderEmployees(); renderDashboard();
+  toast('Employee saved.');
+}
+
+function editEmployee(id) {
+  const e = db.employees.find(x => x.id === id);
+  if (!e) return;
+  populateSelect('e-company', db.companies, 'name');
+  document.getElementById('employee-id').value = e.id;
+  document.getElementById('e-name').value = e.name;
+  document.getElementById('e-company').value = e.company;
+  document.getElementById('e-cpr').value = e.cpr||'';
+  document.getElementById('e-cpr-exp').value = e.cprExp||'';
+  document.getElementById('e-passport').value = e.passport||'';
+  document.getElementById('e-pass-exp').value = e.passExp||'';
+  document.getElementById('e-visa-exp').value = e.visaExp||'';
+  document.getElementById('e-nationality').value = e.nationality||'';
+  document.getElementById('e-title').value = e.title||'';
+  document.getElementById('e-salary').value = e.salary||'';
+  document.getElementById('e-join').value = e.join||'';
+  document.getElementById('e-notes').value = e.notes||'';
+  document.getElementById('employee-modal-title').textContent = 'Edit Employee';
+  document.getElementById('modal-employee').classList.add('open');
+}
+
+function deleteEmployee(id) {
+  if (!confirm('Delete this employee?')) return;
+  db.employees = db.employees.filter(e => e.id !== id);
+  saveDB(); renderEmployees(); toast('Employee deleted.');
+}
+
+// ══════════════════════════════════════════
+// PAYROLL
+// ══════════════════════════════════════════
+let payrollTabFilter = 'all';
+
+function switchPayrollTab(tab, el) {
+  payrollTabFilter = tab;
+  document.querySelectorAll('#page-payroll .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderPayroll();
+}
+
+function populatePayrollFilters() {
+  const opts = '<option value="">All Companies</option>' + db.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('payroll-company-filter').innerHTML = opts;
+
+  const months = [...new Set(db.payroll.map(p => p.month))].sort().reverse();
+  document.getElementById('payroll-month-filter').innerHTML = '<option value="">All Months</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+
+function populatePayrollEmployees() {
+  const compId = document.getElementById('p-company')?.value;
+  const emps = compId ? db.employees.filter(e => e.company === compId) : db.employees;
+  populateSelect('p-employee', emps, 'name');
+}
+
+function renderPayroll(search = '') {
+  const q = (search || '').toLowerCase();
+  const cf = document.getElementById('payroll-company-filter')?.value || '';
+  const mf = document.getElementById('payroll-month-filter')?.value || '';
+
+  let list = db.payroll.filter(p => {
+    const eName = getEmployeeName(p.employee).toLowerCase();
+    const match = !q || eName.includes(q);
+    const co = !cf || p.company === cf;
+    const mo = !mf || p.month === mf;
+    const tab = payrollTabFilter === 'all' || p.status === payrollTabFilter;
+    return match && co && mo && tab;
+  }).sort((a,b) => (b.month > a.month ? 1 : -1));
+
+  if (list.length === 0) {
+    document.getElementById('payroll-table').innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">◎</div><p>No payroll records.</p></div></td></tr>`;
+    return;
+  }
+  document.getElementById('payroll-table').innerHTML = list.map(p => `
+    <tr>
+      <td><strong>${getEmployeeName(p.employee)}</strong></td>
+      <td>${getCompanyName(p.company)}</td>
+      <td>${p.month}</td>
+      <td>BHD ${(parseFloat(p.amount)||0).toFixed(3)}</td>
+      <td><span class="${p.status === 'paid' ? 'payroll-paid' : 'payroll-unpaid'}">${p.status === 'paid' ? '✓ Paid' : '✗ Unpaid'}</span></td>
+      <td>${p.date||'—'}</td>
+      <td><div class="actions-td">
+        ${p.status === 'unpaid' ? `<button class="btn btn-primary btn-sm" onclick="markPaid('${p.id}')">Mark Paid</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deletePayroll('${p.id}')">Del</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function savePayroll() {
+  const id = document.getElementById('payroll-id').value || uid();
+  const obj = {
+    id,
+    company: document.getElementById('p-company').value,
+    employee: document.getElementById('p-employee').value,
+    month: document.getElementById('p-month').value,
+    amount: document.getElementById('p-amount').value,
+    status: document.getElementById('p-status').value,
+    date: document.getElementById('p-date').value,
+    notes: document.getElementById('p-notes').value
+  };
+  if (!obj.employee || !obj.month) { alert('Employee and month required'); return; }
+  const idx = db.payroll.findIndex(p => p.id === id);
+  if (idx >= 0) db.payroll[idx] = obj; else db.payroll.push(obj);
+  saveDB(); closeModal('payroll');
+  populatePayrollFilters(); renderPayroll();
+  toast('Payroll record saved.');
+}
+
+function markPaid(id) {
+  const p = db.payroll.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'paid';
+  p.date = new Date().toISOString().split('T')[0];
+  saveDB(); renderPayroll(); renderDashboard();
+  toast('Marked as paid.');
+}
+
+function deletePayroll(id) {
+  if (!confirm('Delete payroll record?')) return;
+  db.payroll = db.payroll.filter(p => p.id !== id);
+  saveDB(); renderPayroll(); toast('Deleted.');
+}
+
+// ══════════════════════════════════════════
+// MONEY / RECEIVABLES
+// ══════════════════════════════════════════
+function populateMoneyFilters() {
+  const opts = '<option value="">All Companies</option>' + db.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('money-company-filter').innerHTML = opts;
+}
+
+function renderMoneyStats() {
+  const pending = db.money.filter(m => m.status === 'pending').reduce((s,m) => s + (parseFloat(m.cost)||0) + (parseFloat(m.fee)||0), 0);
+  const collected = db.money.filter(m => m.status === 'paid').reduce((s,m) => s + (parseFloat(m.cost)||0) + (parseFloat(m.fee)||0), 0);
+  const totalFees = db.money.reduce((s,m) => s + (parseFloat(m.fee)||0), 0);
+  document.getElementById('money-stats').innerHTML = `
+    <div class="stat-card warn-card"><div class="label">Pending Collection</div><div class="value" style="font-size:20px;">BHD ${pending.toFixed(3)}</div></div>
+    <div class="stat-card ok-card"><div class="label">Collected</div><div class="value" style="font-size:20px;">BHD ${collected.toFixed(3)}</div></div>
+    <div class="stat-card"><div class="label">Total Service Fees</div><div class="value" style="font-size:20px;">BHD ${totalFees.toFixed(3)}</div></div>
+    <div class="stat-card"><div class="label">Total Transactions</div><div class="value">${db.money.length}</div></div>
+  `;
+}
+
+function renderMoney(search = '') {
+  const q = (search || '').toLowerCase();
+  const cf = document.getElementById('money-company-filter')?.value || '';
+  const sf = document.getElementById('money-status-filter')?.value || '';
+
+  let list = db.money.filter(m => {
+    const match = !q || (m.desc||'').toLowerCase().includes(q) || getCompanyName(m.company).toLowerCase().includes(q);
+    const co = !cf || m.company === cf;
+    const st = !sf || m.status === sf;
+    return match && co && st;
+  }).sort((a,b) => (b.date > a.date ? 1 : -1));
+
+  if (list.length === 0) {
+    document.getElementById('money-table').innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">◇</div><p>No transactions yet.</p></div></td></tr>`;
+    return;
+  }
+  document.getElementById('money-table').innerHTML = list.map(m => {
+    const total = (parseFloat(m.cost)||0) + (parseFloat(m.fee)||0);
+    return `
+      <tr>
+        <td><strong>${getCompanyName(m.company)}</strong></td>
+        <td><span style="font-size:12px;color:#999;">${m.bank||'—'}</span></td>
+        <td>${m.desc}</td>
+        <td>BHD ${(parseFloat(m.cost)||0).toFixed(3)}</td>
+        <td>${m.fee ? 'BHD '+parseFloat(m.fee).toFixed(3) : '<span style="color:#999;">—</span>'}</td>
+        <td><strong>BHD ${total.toFixed(3)}</strong></td>
+        <td><span class="badge ${m.status === 'paid' ? 'badge-ok' : 'badge-warn'}">${m.status === 'paid' ? 'Paid' : 'Pending'}</span></td>
+        <td><div class="actions-td">
+          ${m.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="markMoneyPaid('${m.id}')">Mark Paid</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="editMoney('${m.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMoney('${m.id}')">Del</button>
+        </div></td>
+      </tr>`;
+  }).join('');
+}
+
+function saveMoney() {
+  const id = document.getElementById('money-id').value || uid();
+  const obj = {
+    id,
+    company: document.getElementById('m-company').value,
+    bank: document.getElementById('m-bank').value.trim(),
+    desc: document.getElementById('m-desc').value.trim(),
+    cost: document.getElementById('m-cost').value,
+    fee: document.getElementById('m-fee').value,
+    status: document.getElementById('m-status').value,
+    date: document.getElementById('m-date').value,
+    notes: document.getElementById('m-notes').value
+  };
+  if (!obj.desc) { alert('Description required'); return; }
+  const idx = db.money.findIndex(m => m.id === id);
+  if (idx >= 0) db.money[idx] = obj; else db.money.push(obj);
+  saveDB(); closeModal('money'); renderMoney(); renderMoneyStats();
+  toast('Transaction saved.');
+}
+
+function markMoneyPaid(id) {
+  const m = db.money.find(x => x.id === id);
+  if (!m) return;
+  m.status = 'paid';
+  saveDB(); renderMoney(); renderMoneyStats(); renderDashboard();
+  toast('Marked as paid.');
+}
+
+function editMoney(id) {
+  const m = db.money.find(x => x.id === id);
+  if (!m) return;
+  populateSelect('m-company', db.companies, 'name');
+  document.getElementById('money-id').value = m.id;
+  document.getElementById('m-company').value = m.company;
+  document.getElementById('m-bank').value = m.bank||'';
+  document.getElementById('m-desc').value = m.desc;
+  document.getElementById('m-cost').value = m.cost;
+  document.getElementById('m-fee').value = m.fee||'';
+  document.getElementById('m-status').value = m.status;
+  document.getElementById('m-date').value = m.date||'';
+  document.getElementById('m-notes').value = m.notes||'';
+  document.getElementById('modal-money').classList.add('open');
+}
+
+function deleteMoney(id) {
+  if (!confirm('Delete transaction?')) return;
+  db.money = db.money.filter(m => m.id !== id);
+  saveDB(); renderMoney(); renderMoneyStats(); toast('Deleted.');
+}
+
+// ══════════════════════════════════════════
+// EKEYS
+// ══════════════════════════════════════════
+function populateEkeyFilters() {
+  const opts = '<option value="">All Companies</option>' + db.companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('ekey-company-filter').innerHTML = opts;
+}
+
+function renderEkeys(search = '') {
+  const q = (search || '').toLowerCase();
+  const cf = document.getElementById('ekey-company-filter')?.value || '';
+  let list = db.ekeys.filter(k => {
+    const match = !q || k.name.toLowerCase().includes(q) || (k.cpr||'').includes(q) || (k.ekey||'').toLowerCase().includes(q);
+    const co = !cf || k.company === cf;
+    return match && co;
+  });
+  if (list.length === 0) {
+    document.getElementById('ekey-table').innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">◉</div><p>No credentials stored.</p></div></td></tr>`;
+    return;
+  }
+  document.getElementById('ekey-table').innerHTML = list.map(k => `
+    <tr>
+      <td><strong>${k.name}</strong></td>
+      <td>${getCompanyName(k.company)}</td>
+      <td>${k.cpr||'—'}</td>
+      <td style="font-family:monospace;">${k.ekey||'—'}</td>
+      <td style="font-family:monospace;">${k.password||'—'}</td>
+      <td style="font-size:12px;color:#999;">${k.notes||'—'}</td>
+      <td><div class="actions-td">
+        <button class="btn btn-outline btn-sm" onclick="editEkey('${k.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEkey('${k.id}')">Del</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function saveEkey() {
+  const id = document.getElementById('ekey-id').value || uid();
+  const obj = {
+    id,
+    name: document.getElementById('ek-name').value.trim(),
+    company: document.getElementById('ek-company').value,
+    cpr: document.getElementById('ek-cpr').value.trim(),
+    ekey: document.getElementById('ek-ekey').value.trim(),
+    password: document.getElementById('ek-password').value,
+    notes: document.getElementById('ek-notes').value.trim()
+  };
+  if (!obj.name) { alert('Name required'); return; }
+  const idx = db.ekeys.findIndex(k => k.id === id);
+  if (idx >= 0) db.ekeys[idx] = obj; else db.ekeys.push(obj);
+  saveDB(); closeModal('ekey'); renderEkeys();
+  toast('Credential saved.');
+}
+
+function editEkey(id) {
+  const k = db.ekeys.find(x => x.id === id);
+  if (!k) return;
+  populateSelect('ek-company', db.companies, 'name');
+  document.getElementById('ekey-id').value = k.id;
+  document.getElementById('ek-name').value = k.name;
+  document.getElementById('ek-company').value = k.company;
+  document.getElementById('ek-cpr').value = k.cpr||'';
+  document.getElementById('ek-ekey').value = k.ekey||'';
+  document.getElementById('ek-password').value = k.password||'';
+  document.getElementById('ek-notes').value = k.notes||'';
+  document.getElementById('modal-ekey').classList.add('open');
+}
+
+function deleteEkey(id) {
+  if (!confirm('Delete credential?')) return;
+  db.ekeys = db.ekeys.filter(k => k.id !== id);
+  saveDB(); renderEkeys(); toast('Deleted.');
+}
+
+// ══════════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════════
+let currentReport = 'overview';
+function switchReportTab(tab, el) {
+  currentReport = tab;
+  document.querySelectorAll('#page-reports .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderReports(tab);
+}
+
+function renderReports(tab) {
+  const el = document.getElementById('report-content');
+  if (tab === 'overview') {
+    const totalSalary = db.employees.reduce((s,e) => s+(parseFloat(e.salary)||0), 0);
+    const unpaidPay = db.payroll.filter(p=>p.status==='unpaid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+    const pendingMoney = db.money.filter(m=>m.status==='pending').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+    el.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label">Total Companies</div><div class="value">${db.companies.length}</div></div>
+        <div class="stat-card"><div class="label">Total Employees</div><div class="value">${db.employees.length}</div></div>
+        <div class="stat-card"><div class="label">Monthly Salary Bill</div><div class="value" style="font-size:18px;">BHD ${totalSalary.toFixed(3)}</div></div>
+        <div class="stat-card warn-card"><div class="label">Unpaid Payroll</div><div class="value" style="font-size:18px;">BHD ${unpaidPay.toFixed(3)}</div></div>
+        <div class="stat-card warn-card"><div class="label">Pending Receivables</div><div class="value" style="font-size:18px;">BHD ${pendingMoney.toFixed(3)}</div></div>
+        <div class="stat-card"><div class="label">eKeys Stored</div><div class="value">${db.ekeys.length}</div></div>
+      </div>`;
+  } else if (tab === 'per-company') {
+    el.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Company</th><th>CR Expiry</th><th>Employees</th><th>Monthly Salary</th><th>Unpaid Payroll</th><th>Pending Dues</th></tr></thead>
+          <tbody>${db.companies.map(c => {
+            const emps = db.employees.filter(e=>e.company===c.id);
+            const sal = emps.reduce((s,e)=>s+(parseFloat(e.salary)||0),0);
+            const unp = db.payroll.filter(p=>p.company===c.id&&p.status==='unpaid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+            const pend = db.money.filter(m=>m.company===c.id&&m.status==='pending').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+            const days = daysUntil(c.crExp);
+            return `<tr>
+              <td><strong>${c.name}</strong><br><span style="font-size:11px;color:#999;">Bank: ${c.bank||'—'}</span></td>
+              <td class="${expiryClass(days)}">${c.crExp||'—'}</td>
+              <td>${emps.length}</td>
+              <td>BHD ${sal.toFixed(3)}</td>
+              <td class="${unp>0?'exp-danger':''}">${unp>0?'BHD '+unp.toFixed(3):'—'}</td>
+              <td class="${pend>0?'exp-warn':''}">${pend>0?'BHD '+pend.toFixed(3):'—'}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+  } else if (tab === 'expiries') {
+    const allExp = [];
+    db.employees.forEach(e => {
+      [['CPR',e.cprExp],['Passport',e.passExp],['Visa',e.visaExp]].forEach(([t,d])=>{
+        if(d) allExp.push({name:e.name,company:getCompanyName(e.company),type:t,date:d,days:daysUntil(d)});
+      });
+    });
+    db.companies.forEach(c => {
+      if(c.crExp) allExp.push({name:c.name,company:'Company',type:'CR',date:c.crExp,days:daysUntil(c.crExp)});
+    });
+    allExp.sort((a,b)=>a.days-b.days);
+    el.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Company</th><th>Type</th><th>Expiry Date</th><th>Status</th></tr></thead>
+          <tbody>${allExp.map(e=>`
+            <tr>
+              <td><strong>${e.name}</strong></td>
+              <td>${e.company}</td>
+              <td><span class="badge badge-gray">${e.type}</span></td>
+              <td>${e.date}</td>
+              <td class="${expiryClass(e.days)}">${e.days<0?'EXPIRED ('+Math.abs(e.days)+'d ago)':e.days===0?'Today!':e.days+' days left'}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+  } else if (tab === 'financials') {
+    const totalCost = db.money.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);
+    const totalFees = db.money.reduce((s,m)=>s+(parseFloat(m.fee)||0),0);
+    const collected = db.money.filter(m=>m.status==='paid').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+    const pending = db.money.filter(m=>m.status==='pending').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+    el.innerHTML = `
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="label">Total Cost Paid by Us</div><div class="value" style="font-size:18px;">BHD ${totalCost.toFixed(3)}</div></div>
+        <div class="stat-card ok-card"><div class="label">Total Service Fees</div><div class="value" style="font-size:18px;">BHD ${totalFees.toFixed(3)}</div></div>
+        <div class="stat-card ok-card"><div class="label">Collected from Clients</div><div class="value" style="font-size:18px;">BHD ${collected.toFixed(3)}</div></div>
+        <div class="stat-card warn-card"><div class="label">Still Pending</div><div class="value" style="font-size:18px;">BHD ${pending.toFixed(3)}</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Company</th><th>Transactions</th><th>Total Due</th><th>Paid</th><th>Pending</th></tr></thead>
+          <tbody>${db.companies.map(c=>{
+            const txns = db.money.filter(m=>m.company===c.id);
+            const due = txns.reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+            const paid = txns.filter(m=>m.status==='paid').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+            const pend = txns.filter(m=>m.status==='pending').reduce((s,m)=>s+(parseFloat(m.cost)||0)+(parseFloat(m.fee)||0),0);
+            return `<tr>
+              <td><strong>${c.name}</strong></td>
+              <td>${txns.length}</td>
+              <td>BHD ${due.toFixed(3)}</td>
+              <td class="${paid>0?'amount-positive':''}">BHD ${paid.toFixed(3)}</td>
+              <td class="${pend>0?'amount-pending':''}">BHD ${pend.toFixed(3)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-BH', {weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+loadDB();
+renderDashboard();
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) {
+      const id = this.id.replace('modal-','');
+      closeModal(id);
+    }
+  });
+});
+</script>
+</body>
+</html>
