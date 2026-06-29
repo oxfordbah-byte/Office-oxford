@@ -555,10 +555,7 @@ else if(t==='financials'){const tc=db.money.reduce((s,m)=>s+(parseFloat(m.cost)|
 
 document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-BH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
 loadDB();renderDashboard();
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)closeModal(this.id.replace('modal-',''));}));
-</script>
-</body>
-</html>
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)closeModal(this.id.replace('modal-',''));
 else if(t==='payroll-report'){
 const months=[...new Set(db.payroll.map(p=>p.month))].sort().reverse();
 let html='';
@@ -567,17 +564,20 @@ months.forEach(m=>{
   const total=rows.reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
   const paid=rows.filter(p=>p.status==='paid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
   const unpaid=rows.filter(p=>p.status==='unpaid').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  html+='<div class="print-section-title">'+m+' &nbsp;&mdash;&nbsp; Total: BHD '+total.toFixed(3)+' &nbsp;|&nbsp; Paid: BHD '+paid.toFixed(3)+' &nbsp;|&nbsp; Unpaid: BHD '+unpaid.toFixed(3)+'</div>';
+  html+='<div class="print-section-title">'+m+' &mdash; Total: BHD '+total.toFixed(3)+' | Paid: BHD '+paid.toFixed(3)+' | Unpaid: BHD '+unpaid.toFixed(3)+'</div>';
   html+='<div class="table-wrap"><table><thead><tr><th>Type</th><th>Company / Employee</th><th>Amount (BHD)</th><th>Status</th><th>Paid On</th></tr></thead><tbody>';
   html+=rows.map(p=>{
     const isComp=p.type==='company';
-    const name=isComp?getCompanyName(p.company)+' <small>(Company)</small>':getEmployeeName(p.employee)+' &mdash; '+getCompanyName(p.company);
+    const name=isComp?('<strong>'+getCompanyName(p.company)+'</strong> <small>(Company)</small>'):('<strong>'+getEmployeeName(p.employee)+'</strong> &mdash; '+getCompanyName(p.company));
     return '<tr><td>'+(isComp?'Company':'Individual')+'</td><td>'+name+'</td><td>BHD '+(parseFloat(p.amount)||0).toFixed(3)+'</td><td><span class="'+(p.status==='paid'?'payroll-paid':'payroll-unpaid')+'">'+(p.status==='paid'?'Paid':'Unpaid')+'</span></td><td>'+(p.date||'--')+'</td></tr>';
   }).join('');
-  html+='</tbody></table></div>';
+  html+='</tbody></table></div><br>';
 });
-el.innerHTML=html||'<div class="empty-state"><p>No payroll records.</p></div>';}
+el.innerHTML=html||'<div class="empty-state"><p>No payroll records yet.</p></div>';
+}
 else if(t==='employees-report'){
-el.innerHTML='<div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Company</th><th>CPR</th><th>Passport</th><th>Visa Expiry</th><th>Pass Expiry</th><th>Status</th><th>Nationality</th></tr></thead><tbody>'+
-db.employees.map((e,i)=>'<tr><td>'+(i+1)+'</td><td><strong>'+e.name+'</strong></td><td>'+getCompanyName(e.company)+'</td><td>'+(e.cpr||'--')+'</td><td>'+(e.passport||'--')+'</td><td class="'+expiryClass(daysUntil(e.visaExp))+'">'+(e.visaExp||'--')+'</td><td class="'+expiryClass(daysUntil(e.passExp))+'">'+(e.passExp||'--')+'</td><td>'+getDocStatus(e.visaExp)+'</td><td>'+(e.nationality||'--')+'</td></tr>').join('')+
-'</tbody></table></div>';}
+el.innerHTML='<div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Company</th><th>CPR</th><th>Passport No.</th><th>Visa Expiry</th><th>Pass Expiry</th><th>Status</th><th>Nationality</th></tr></thead><tbody>'+
+db.employees.map((e,i)=>'<tr><td style="color:#999;">'+(i+1)+'</td><td><strong>'+e.name+'</strong></td><td>'+getCompanyName(e.company)+'</td><td>'+(e.cpr||'--')+'</td><td>'+(e.passport||'--')+'</td><td class="'+expiryClass(daysUntil(e.visaExp))+'">'+(e.visaExp||'--')+'</td><td class="'+expiryClass(daysUntil(e.passExp))+'">'+(e.passExp||'--')+'</td><td>'+getDocStatus(e.visaExp)+'</td><td>'+(e.nationality||'--')+'</td></tr>').join('')+
+'</tbody></table></div>';
+}
+}>
